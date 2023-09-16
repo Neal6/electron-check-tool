@@ -1,7 +1,7 @@
 {
   "name": "asin-check-tool",
   "productName": "asin-check-tool",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {
@@ -15,6 +15,10 @@
   "author": {
     "name": "d.nee69",
     "email": "d.nee69@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neal6/electron-check-tool"
   },
   "license": "MIT",
   "dependencies": {

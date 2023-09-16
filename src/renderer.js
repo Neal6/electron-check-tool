@@ -105,6 +105,7 @@ const uploadFile = async (file) => {
     }
   }
   const result = await window.toolApi.checkAsin(asinInfoList);
+  console.log(result)
   if (!result) {
     statusTool.innerHTML =
       "Có lỗi xảy ra, vui lòng thực hiện lại hoặc báo lại IT để xử lý";
@@ -118,7 +119,6 @@ const uploadFile = async (file) => {
       const newRow = document.createElement("tr");
       const tdAcc = document.createElement("td");
       const tdAsin = document.createElement("td");
-      const tdDes = document.createElement("td");
       const tdReport = document.createElement("td");
       if (
         rs.checkResult &&
@@ -127,23 +127,17 @@ const uploadFile = async (file) => {
         rs.checkResult.includes("buybox") &&
         rs.checkResult.includes("result")
       ) {
-        tdAcc.classList.add("success");
-        tdAsin.classList.add("success");
-        tdDes.classList.add("success");
-        tdReport.classList.add("success");
+        continue;
       } else {
         tdAcc.classList.add("fail");
         tdAsin.classList.add("fail");
-        tdDes.classList.add("fail");
         tdReport.classList.add("fail");
       }
       tdAcc.textContent = rs.acc;
       tdAsin.textContent = rs.asin;
-      tdDes.textContent = renderDes(rs.checkResult);
       tdReport.textContent = renderReport(rs.checkResult);
       newRow.appendChild(tdAcc);
       newRow.appendChild(tdAsin);
-      newRow.appendChild(tdDes);
       newRow.appendChild(tdReport);
       newTable.appendChild(newRow);
     }
