@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tool check lỗi</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <!-- Upload Area -->
+    <div id="uploadArea" class="upload-area">
+      <!-- Header -->
+      <div class="upload-area__header">
+        <h1 class="upload-area__title">Upload your file</h1>
+        <p class="upload-area__paragraph">
+          File should be an image
+          <strong class="upload-area__tooltip">
+            Like
+            <span class="upload-area__tooltip-data"></span>
+            <!-- Data Will be Comes From Js -->
+          </strong>
+        </p>
+      </div>
+      <!-- End Header -->
+
+      <!-- Drop Zoon -->
+      <div id="dropZoon" class="upload-area__drop-zoon drop-zoon">
+        <span class="drop-zoon__icon">
+          <i class="bx bxs-file-image"></i>
+        </span>
+        <p class="drop-zoon__paragraph">
+          Drop your file here or Click to browse
+        </p>
+
+        <input
+          type="file"
+          id="fileInput"
+          class="drop-zoon__file-input"
+          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+        />
+      </div>
+    </div>
+    <div id="result-screen">
+      <button id="close-result-screen">ĐÓNG</button>
+      <div id="status"></div>
+      <div id="table-result"></div>
+    </div>
+  </body>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="./renderer.js"></script>
+</html>
