@@ -2,59 +2,57 @@ const puppeteer = require("puppeteer-extra");
 
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
+const { executablePath } = require("puppeteer");
+
 puppeteer.use(StealthPlugin());
 
 const checkAsin = async (params) => {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: executablePath(),
   });
-  const page = await browser.newPage();
-  await page.setViewport({
+  let page1 = await browser.newPage();
+  await page1.setViewport({
     width: 1440,
     height: 1000,
     deviceScaleFactor: 1,
   });
-  await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-  );
-
-  await page.goto(`https://www.amazon.com/`, {
+  await page1.goto(`https://www.amazon.com/`, {
     waitUntil: "domcontentloaded",
   });
+
   try {
-    await page.waitForTimeout(20000);
     let stopReload = 0;
     while (stopReload === 0) {
-      let isNotHomePage = await page.evaluate(() => {
+      await page1.waitForTimeout(1000);
+      let isNotHomePage = await page1.evaluate(() => {
         if (document.getElementById("captchacharacters")) {
           return true;
         } else if (
           !document.getElementById("nav-global-location-popover-link")
         ) {
-          return true;
+          return "reload";
         } else {
           return false;
         }
       });
       if (!isNotHomePage) {
         stopReload = 1;
-      } else {
-        await page.waitForTimeout(5000);
-        await page.goto(`https://www.amazon.com/`, {
+      } else if (isNotHomePage === "reload") {
+        await page1.goto(`https://www.amazon.com/`, {
           waitUntil: "domcontentloaded",
         });
       }
     }
-
-    await page.waitForTimeout(2000);
-    await page.click("#nav-global-location-popover-link");
-    await page.waitForTimeout(2000);
-    await page.type("#GLUXZipUpdateInput", "90017");
-    await page.waitForTimeout(2000);
-    await page.click("#GLUXZipUpdate-announce");
-    await page.waitForTimeout(2000);
-    await page.goto(`https://www.amazon.com/`, {
+    await page1.waitForTimeout(2000);
+    await page1.click("#nav-global-location-popover-link");
+    await page1.waitForTimeout(2000);
+    await page1.type("#GLUXZipUpdateInput", "90017");
+    await page1.waitForTimeout(2000);
+    await page1.click("#GLUXZipUpdate-announce");
+    await page1.waitForTimeout(2000);
+    await page1.goto(`https://www.amazon.com/`, {
       waitUntil: "domcontentloaded",
     });
 
@@ -93,7 +91,7 @@ const checkAsin = async (params) => {
         i = 0;
       }
     }
-    console.log(subParams)
+    console.log(subParams);
 
     await Promise.all([
       page2.goto(`https://www.amazon.com/`, {
@@ -111,7 +109,7 @@ const checkAsin = async (params) => {
     ]);
 
     await Promise.all([
-      checkToolLogic(params, subParams[0], page),
+      checkToolLogic(params, subParams[0], page1),
       checkToolLogic(params, subParams[1], page2),
       checkToolLogic(params, subParams[2], page3),
       checkToolLogic(params, subParams[3], page4),
@@ -131,7 +129,7 @@ async function checkToolLogic(params, asinList, page) {
     const element = asinList[index];
     const indexInParams = params.findIndex((p) => p.asin === element.asin);
     if (element.asin) {
-      await page.waitForTimeout(1000);
+      await page.waitForSelector("#twotabsearchtextbox");
       await page.click("#twotabsearchtextbox", { clickCount: 2 });
       await page.waitForTimeout(500);
       await page.type("#twotabsearchtextbox", element.asin);
@@ -150,11 +148,20 @@ async function checkToolLogic(params, asinList, page) {
         }
       });
       if (!isNoResult) {
-        await page.evaluate((element) => {
-          document.querySelector(`div[data-asin=${element.asin}] img`).click();
-          return;
+        const checkResult = await page.evaluate((element) => {
+          if (document.querySelector(`div[data-asin=${element.asin}]`)) {
+            document
+              .querySelector(`div[data-asin=${element.asin}] img`)
+              .click();
+            return true;
+          } else {
+            return false;
+          }
         }, element);
-
+        if (!checkResult) {
+          params[indexInParams].checkResult = ["noResult"];
+          continue;
+        }
         await page.waitForNavigation();
         const checkList = await page.evaluate(() => {
           let list = [];

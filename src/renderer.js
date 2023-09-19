@@ -114,7 +114,7 @@ const uploadFile = async (file) => {
     statusTool.style.display = 'none'
     const newTable = document.createElement("table");
     newTable.innerHTML =
-      "<thead><th>Tài khoản</th><th>Asin</th><th>Mô tả</th><th>Báo cáo</th></thead>";
+      "<thead><th>Tài khoản</th><th>Asin</th><th>Báo cáo</th></thead>";
     for (rs of result) {
       const newRow = document.createElement("tr");
       const tdAcc = document.createElement("td");
